@@ -1,10 +1,8 @@
 import cv2
 import os
-import numpy as np
 path = '/home/butterchicken/Documents/MLSP_Project_Code/mlsp_project/Preprocessing_Images/'
 def load_images_from_folder(folder = path+'original_data/'):
     directory = path + 'Downscaled_Images/'
-    dimg = np.zeros((500,500,3))
     if not os.path.exists(directory):
         os.makedirs(directory)
     for filename in os.listdir(folder):
@@ -15,4 +13,3 @@ def load_images_from_folder(folder = path+'original_data/'):
 
 
 og_im = load_images_from_folder()
-
