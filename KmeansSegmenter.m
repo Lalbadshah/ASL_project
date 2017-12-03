@@ -1,5 +1,5 @@
 clear all
-filepath = 'OurData/';
+filepath = 'data2/';
 filename = '4A.JPG';
 
 % %%% 
@@ -55,7 +55,7 @@ Transform = [.279,.504,.098; -.148 , .291 , .439 ; .439 , -.368 , -.071];
 shift1 = [16,128,128];
 YCbCr = (Transform * VectorizedImage')' + repmat(shift1 ,length_vec,1) ; 
 
-k = 2;
+k = 4;
 %[idx,C] = kmeans([HSV,YCbCr],k);
 %[idx,C] = kmeans([HSV],k,'Distance','correlation');
 [idx,C] = kmeans(HSV,k);
@@ -68,6 +68,19 @@ figure
 imshow(Lrgb)
 
 
+h = figure;
+subplot(131);
+imshow(A)
+title('Original Image');
+subplot(132);
+%imshow(Gtotal,[])
+imagesc(Gtotal); axis image; axis off; caxis([0 200]);
+title('Gradient');
+subplot(133);
+imshow(Lrgb)
+title(sprintf('KNN with k=%g',k));
+
+saveas(h,sprintf('%s_KNN_k%g_data%s.png',filename(1:2),k,filepath(5)))
 
 
 
