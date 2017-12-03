@@ -91,23 +91,34 @@ end
 [V,D] = eigs(Sb,Sw,L-1);
 
 %% Linear Gaussian Classifier
+lgc_eig = 50;
+
+% Project train data into LDA space (already in PCA space)
+LDAprojTrain = projTrain'*V(:,1:lgc_eig);
+% Seperate out the train set based on letter
+k=10; l=1;
+for i = 1:10:size(LDAprojTrain,1)
+    LDAclass{l} = LDAprojTrain(i:k,:); k=k+10; l=l+1;
+end
 
 % Project test data into PCA then LDA spaces
 PCAprojTest = (Test'*coef(:,1:eigen));
-projTest = PCAprojTest*V;
+LDAprojTest = PCAprojTest*V(:,1:lgc_eig);
 
 for i = 1:length(alpha)
-   meanClass{i} = mean(Class{i});
-   covClass{i} = cov(Class{i});
+   meanClass{i} = mean(LDAclass{i});
+   covClass{i} = cov(LDAclass{i});
 end
+
+I = eye(lgc_eig,lgc_eig);
 
 % Using each covariance matrix for each classification
 for i = 1:length(alpha)
-    probClass(i,:) = (size(Class{i},2)/size(projTrain,1)) * mvnpdf(projTest,meanClass{i},covClass{i});
+    probClass(i,:) = (size(LDAclass{i},2)/size(projTrain,1)) * mvnpdf(LDAprojTest,meanClass{i},covClass{i}+0.01*I);
 end
 [~,decision] = max(probClass,[],1);
 
 alpha_decision = alpha(decision);
 truth = 'aabbccddeeffgghhiikkllmmnnooppqqrrssttuuvvwwxxyy';
 
-numCorrect(z) = sum((alpha_decision==truth));
+numCorrect = sum((alpha_decision==truth));
